@@ -45,7 +45,6 @@
     padding:0 28px;
   }
 
-  /* focus visibility */
   a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible{
     outline:2px solid var(--accent);
     outline-offset:3px;
@@ -55,7 +54,6 @@
     *{ animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important; scroll-behavior:auto !important; }
   }
 
-  /* ---------- Header ---------- */
   header{
     position:sticky; top:0; z-index:40;
     background:rgba(20,23,28,0.9);
@@ -99,7 +97,6 @@
     .burger{ display:block; }
   }
 
-  /* ---------- Hero ---------- */
   .hero{
     padding:76px 0 60px;
     border-bottom:1px solid var(--line);
@@ -164,7 +161,6 @@
   }
   .btn-secondary:hover{ border-color:var(--text-faint); }
 
-  /* pipeline card */
   .pipeline-card{
     background:var(--surface);
     border:1px solid var(--line);
@@ -212,7 +208,6 @@
   .stage.done .body b{ color:var(--text-dim); }
   .stage.active .body b{ color:var(--text); }
 
-  /* ---------- Section shell ---------- */
   section{ padding:72px 0; border-bottom:1px solid var(--line); }
   .eyebrow-row{
     display:flex; align-items:center; gap:14px;
@@ -238,7 +233,6 @@
     line-height:1.65;
   }
 
-  /* ---------- Services ---------- */
   .service-grid{
     margin-top:40px;
     display:grid;
@@ -273,7 +267,6 @@
     line-height:1.6;
   }
 
-  /* ---------- Process ---------- */
   .process-list{ margin-top:44px; }
   .proc-row{
     display:grid;
@@ -297,7 +290,6 @@
   }
   .proc-row p{ color:var(--text-dim); font-size:14.5px; max-width:60ch; }
 
-  /* ---------- Pricing ---------- */
   .price-grid{
     margin-top:40px;
     display:grid;
@@ -353,7 +345,6 @@
     max-width:60ch;
   }
 
-  /* ---------- Contact ---------- */
   .contact-grid{
     margin-top:40px;
     display:grid;
@@ -399,7 +390,6 @@
   .form-status{ font-size:13.5px; margin-top:4px; min-height:18px; }
   .form-status.ok{ color:var(--pass); }
 
-  /* ---------- Footer ---------- */
   footer{ padding:36px 0; }
   .foot-row{
     display:flex; justify-content:space-between; align-items:center;
@@ -588,7 +578,7 @@
       <h2>Tell me about your build</h2>
       <p class="section-sub">Fill in the form and it'll open in your email client, ready to send — or reach out directly.</p>
       <dl>
-        <div><dt>EMAIL</dt><dd>you@example.com</dd></div>
+        <div><dt>EMAIL</dt><dd>raoumar0058@gmail.com</dd></div>
         <div><dt>TYPICAL REPLY TIME</dt><dd>Within 1–2 business days</dd></div>
         <div><dt>CURRENTLY</dt><dd>Open for new projects</dd></div>
       </dl>
@@ -636,7 +626,7 @@
 <footer>
   <div class="wrap foot-row">
     <div class="logo"><span class="dot"></span>TESTBENCH</div>
-    <div class="fine">© 2026 · Replace with your name/business</div>
+    <div class="fine">© 2026 · Khadija Rao</div>
   </div>
 </footer>
 
@@ -664,7 +654,7 @@
       'What needs testing:\n' + (details || '—')
     );
 
-    window.location.href = 'mailto:you@example.com?subject=' + subject + '&body=' + body;
+    window.location.href = 'mailto:raoumar0058@gmail.com?subject=' + subject + '&body=' + body;
 
     document.getElementById('form-status').textContent = 'Opening your email app…';
     document.getElementById('form-status').classList.add('ok');
