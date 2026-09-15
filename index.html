@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Testbench — Game QA &amp; Playtesting</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap');
+
+  :root{
+    --bg: #14171C;
+    --surface: #1B1F27;
+    --surface-2: #20242D;
+    --line: #2C313C;
+    --text: #E8EAED;
+    --text-dim: #9098A5;
+    --text-faint: #5B6270;
+    --accent: #FF5D3A;
+    --accent-dim: #B8442A;
+    --pass: #4ADE80;
+    --font-head: 'Archivo', sans-serif;
+    --font-body: 'Inter', sans-serif;
+    --font-mono: 'IBM Plex Mono', monospace;
+  }
+
+  *{ margin:0; padding:0; box-sizing:border-box; }
+
+  html{ scroll-behavior:smooth; }
+
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--font-body);
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  a{ color:inherit; text-decoration:none; }
+  ul{ list-style:none; }
+  img,svg{ display:block; max-width:100%; }
+
+  .wrap{
+    max-width:1120px;
+    margin:0 auto;
+    padding:0 28px;
+  }
+
+  /* focus visibility */
+  a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible{
+    outline:2px solid var(--accent);
+    outline-offset:3px;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important; scroll-behavior:auto !important; }
+  }
+
+  /* ---------- Header ---------- */
+  header{
+    position:sticky; top:0; z-index:40;
+    background:rgba(20,23,28,0.9);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px 28px;
+    max-width:1120px; margin:0 auto;
+  }
+  .logo{
+    font-family:var(--font-head);
+    font-weight:800;
+    font-size:19px;
+    letter-spacing:-0.02em;
+    display:flex; align-items:center; gap:9px;
+  }
+  .logo .dot{
+    width:9px; height:9px; border-radius:2px;
+    background:var(--accent);
+    display:inline-block;
+    transform:rotate(45deg);
+  }
+  .nav-links{ display:flex; gap:34px; font-size:14.5px; color:var(--text-dim); }
+  .nav-links a:hover{ color:var(--text); }
+  .nav-cta{
+    font-family:var(--font-mono);
+    font-size:13px;
+    background:var(--accent);
+    color:#181008;
+    padding:9px 16px;
+    border-radius:3px;
+    font-weight:600;
+  }
+  .nav-cta:hover{ background:#ff7a5c; }
+  .burger{ display:none; background:none; border:none; color:var(--text); font-size:22px; cursor:pointer; }
+
+  @media (max-width:760px){
+    .nav-links{ display:none; }
+    .burger{ display:block; }
+  }
+
+  /* ---------- Hero ---------- */
+  .hero{
+    padding:76px 0 60px;
+    border-bottom:1px solid var(--line);
+  }
+  .hero-grid{
+    display:grid;
+    grid-template-columns:1.15fr 0.85fr;
+    gap:56px;
+    align-items:center;
+  }
+  @media (max-width:860px){ .hero-grid{ grid-template-columns:1fr; gap:40px; } }
+
+  .ticket{
+    font-family:var(--font-mono);
+    font-size:12.5px;
+    color:var(--text-faint);
+    margin-bottom:22px;
+    display:flex; gap:10px; align-items:center;
+  }
+  .ticket span.id{ color:var(--accent); }
+
+  h1{
+    font-family:var(--font-head);
+    font-weight:800;
+    font-size:clamp(34px, 5vw, 52px);
+    line-height:1.06;
+    letter-spacing:-0.02em;
+    max-width:11ch;
+  }
+
+  .hero-sub{
+    margin-top:20px;
+    font-size:17px;
+    color:var(--text-dim);
+    max-width:46ch;
+    line-height:1.6;
+  }
+
+  .hero-actions{
+    margin-top:32px;
+    display:flex;
+    gap:14px;
+    flex-wrap:wrap;
+  }
+  .btn-primary{
+    background:var(--accent);
+    color:#181008;
+    font-weight:600;
+    padding:13px 22px;
+    border-radius:3px;
+    font-size:15px;
+    border:none;
+    cursor:pointer;
+  }
+  .btn-primary:hover{ background:#ff7a5c; }
+  .btn-secondary{
+    border:1px solid var(--line);
+    color:var(--text);
+    padding:13px 22px;
+    border-radius:3px;
+    font-size:15px;
+  }
+  .btn-secondary:hover{ border-color:var(--text-faint); }
+
+  /* pipeline card */
+  .pipeline-card{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:6px;
+    padding:26px 24px;
+  }
+  .pipeline-card .head{
+    display:flex; justify-content:space-between; align-items:baseline;
+    margin-bottom:22px;
+  }
+  .pipeline-card .head .t{
+    font-family:var(--font-mono); font-size:12px; color:var(--text-faint);
+  }
+  .pipeline-card .head .build{
+    font-family:var(--font-mono); font-size:12px; color:var(--text-dim);
+  }
+  .pipeline{
+    display:flex; flex-direction:column; gap:0;
+  }
+  .stage{
+    display:flex; align-items:flex-start; gap:14px;
+    position:relative;
+    padding-bottom:26px;
+  }
+  .stage:last-child{ padding-bottom:0; }
+  .stage::before{
+    content:'';
+    position:absolute;
+    left:6px; top:18px; bottom:0;
+    width:1px;
+    background:var(--line);
+  }
+  .stage:last-child::before{ display:none; }
+  .stage .node{
+    width:13px; height:13px; border-radius:50%;
+    background:var(--surface-2);
+    border:2px solid var(--text-faint);
+    flex-shrink:0; margin-top:2px;
+    z-index:1;
+  }
+  .stage.done .node{ background:var(--pass); border-color:var(--pass); }
+  .stage.active .node{ background:var(--accent); border-color:var(--accent); }
+  .stage .body b{ display:block; font-size:14.5px; font-weight:600; }
+  .stage .body span{ font-size:13px; color:var(--text-faint); }
+  .stage.done .body b{ color:var(--text-dim); }
+  .stage.active .body b{ color:var(--text); }
+
+  /* ---------- Section shell ---------- */
+  section{ padding:72px 0; border-bottom:1px solid var(--line); }
+  .eyebrow-row{
+    display:flex; align-items:center; gap:14px;
+    margin-bottom:14px;
+  }
+  .kicker{
+    font-family:var(--font-mono);
+    font-size:12.5px;
+    color:var(--accent);
+  }
+  h2{
+    font-family:var(--font-head);
+    font-weight:700;
+    font-size:clamp(24px, 3vw, 32px);
+    letter-spacing:-0.01em;
+    max-width:20ch;
+  }
+  .section-sub{
+    color:var(--text-dim);
+    font-size:15.5px;
+    max-width:56ch;
+    margin-top:12px;
+    line-height:1.65;
+  }
+
+  /* ---------- Services ---------- */
+  .service-grid{
+    margin-top:40px;
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:1px;
+    background:var(--line);
+    border:1px solid var(--line);
+    border-radius:6px;
+    overflow:hidden;
+  }
+  @media (max-width:760px){ .service-grid{ grid-template-columns:1fr; } }
+  .service{
+    background:var(--surface);
+    padding:28px 26px;
+  }
+  .service .sev{
+    font-family:var(--font-mono);
+    font-size:11.5px;
+    color:var(--text-faint);
+    margin-bottom:14px;
+  }
+  .service .sev.crit{ color:var(--accent); }
+  .service h3{
+    font-family:var(--font-head);
+    font-weight:700;
+    font-size:18px;
+    margin-bottom:10px;
+  }
+  .service p{
+    font-size:14.5px;
+    color:var(--text-dim);
+    line-height:1.6;
+  }
+
+  /* ---------- Process ---------- */
+  .process-list{ margin-top:44px; }
+  .proc-row{
+    display:grid;
+    grid-template-columns:56px 1fr;
+    gap:20px;
+    padding:22px 0;
+    border-top:1px solid var(--line);
+  }
+  .process-list .proc-row:last-child{ border-bottom:1px solid var(--line); }
+  .proc-row .num{
+    font-family:var(--font-mono);
+    font-size:13px;
+    color:var(--text-faint);
+    padding-top:2px;
+  }
+  .proc-row h4{
+    font-family:var(--font-head);
+    font-weight:700;
+    font-size:16.5px;
+    margin-bottom:6px;
+  }
+  .proc-row p{ color:var(--text-dim); font-size:14.5px; max-width:60ch; }
+
+  /* ---------- Pricing ---------- */
+  .price-grid{
+    margin-top:40px;
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:18px;
+  }
+  @media (max-width:860px){ .price-grid{ grid-template-columns:1fr; } }
+  .price-card{
+    border:1px solid var(--line);
+    border-radius:6px;
+    padding:28px 24px;
+    display:flex; flex-direction:column;
+    background:var(--surface);
+  }
+  .price-card.feature{
+    border-color:var(--accent-dim);
+    background:linear-gradient(180deg, rgba(255,93,58,0.06), var(--surface) 60%);
+  }
+  .price-card .tag{
+    font-family:var(--font-mono);
+    font-size:11.5px;
+    color:var(--text-faint);
+    margin-bottom:16px;
+  }
+  .price-card.feature .tag{ color:var(--accent); }
+  .price-card h3{ font-family:var(--font-head); font-size:19px; font-weight:700; margin-bottom:6px; }
+  .price-card .amount{ font-family:var(--font-mono); font-size:26px; color:var(--text); margin:10px 0 18px; }
+  .price-card .amount small{ font-size:13px; color:var(--text-faint); font-weight:400; }
+  .price-card ul{ flex:1; display:flex; flex-direction:column; gap:10px; margin-bottom:22px; }
+  .price-card li{
+    font-size:13.5px; color:var(--text-dim);
+    padding-left:18px; position:relative;
+  }
+  .price-card li::before{
+    content:'—';
+    position:absolute; left:0; color:var(--text-faint);
+  }
+  .price-card .cta{
+    text-align:center;
+    padding:11px;
+    border-radius:3px;
+    border:1px solid var(--line);
+    font-size:14px; font-weight:600;
+  }
+  .price-card.feature .cta{ background:var(--accent); color:#181008; border-color:var(--accent); }
+  .price-card .cta:hover{ border-color:var(--text-faint); }
+  .price-card.feature .cta:hover{ background:#ff7a5c; }
+
+  .price-note{
+    margin-top:22px;
+    font-size:13.5px;
+    color:var(--text-faint);
+    max-width:60ch;
+  }
+
+  /* ---------- Contact ---------- */
+  .contact-grid{
+    margin-top:40px;
+    display:grid;
+    grid-template-columns:0.9fr 1.1fr;
+    gap:50px;
+  }
+  @media (max-width:860px){ .contact-grid{ grid-template-columns:1fr; } }
+
+  .contact-info dl{ margin-top:24px; display:flex; flex-direction:column; gap:18px; }
+  .contact-info dt{ font-family:var(--font-mono); font-size:11.5px; color:var(--text-faint); margin-bottom:4px; }
+  .contact-info dd{ font-size:15px; }
+
+  form{ display:flex; flex-direction:column; gap:16px; }
+  .field-row{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  @media (max-width:560px){ .field-row{ grid-template-columns:1fr; } }
+  label{ font-size:13px; color:var(--text-dim); margin-bottom:6px; display:block; }
+  input, textarea, select{
+    width:100%;
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:4px;
+    padding:11px 13px;
+    color:var(--text);
+    font-family:var(--font-body);
+    font-size:14.5px;
+  }
+  input:focus, textarea:focus, select:focus{ border-color:var(--accent); }
+  textarea{ resize:vertical; min-height:110px; }
+  .submit-btn{
+    background:var(--accent);
+    color:#181008;
+    font-weight:600;
+    padding:13px 22px;
+    border-radius:3px;
+    font-size:15px;
+    border:none;
+    cursor:pointer;
+    align-self:flex-start;
+    margin-top:6px;
+  }
+  .submit-btn:hover{ background:#ff7a5c; }
+  .form-note{ font-size:12.5px; color:var(--text-faint); margin-top:2px; }
+  .form-status{ font-size:13.5px; margin-top:4px; min-height:18px; }
+  .form-status.ok{ color:var(--pass); }
+
+  /* ---------- Footer ---------- */
+  footer{ padding:36px 0; }
+  .foot-row{
+    display:flex; justify-content:space-between; align-items:center;
+    flex-wrap:wrap; gap:16px;
+  }
+  .foot-row .logo{ font-size:15px; }
+  footer .fine{ font-size:12.5px; color:var(--text-faint); font-family:var(--font-mono); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="nav">
+    <div class="logo"><span class="dot"></span>TESTBENCH</div>
+    <nav class="nav-links">
+      <a href="#services">Services</a>
+      <a href="#process">Process</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <a href="#contact" class="nav-cta">Request a quote</a>
+  </div>
+</header>
+
+<section class="hero" style="border-bottom:1px solid var(--line);">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="ticket">TICKET <span class="id">#001</span> · STATUS: OPEN FOR WORK</div>
+      <h1>I find what's broken in your game before your players do.</h1>
+      <p class="hero-sub">Freelance QA testing and playtesting for indie and small studios — bug hunting, compatibility checks, and honest feedback on builds, delivered as a report you can actually act on.</p>
+      <div class="hero-actions">
+        <a href="#contact" class="btn-primary">Send me your build</a>
+        <a href="#services" class="btn-secondary">See what I test</a>
+      </div>
+    </div>
+
+    <div class="pipeline-card">
+      <div class="head">
+        <span class="t">BUILD PIPELINE</span>
+        <span class="build">v0.9.2-beta</span>
+      </div>
+      <div class="pipeline">
+        <div class="stage done">
+          <div class="node"></div>
+          <div class="body"><b>Build submitted</b><span>You send the build + focus areas</span></div>
+        </div>
+        <div class="stage done">
+          <div class="node"></div>
+          <div class="body"><b>Test plan drafted</b><span>Coverage scoped to your platform &amp; timeline</span></div>
+        </div>
+        <div class="stage active">
+          <div class="node"></div>
+          <div class="body"><b>In testing</b><span>Bugs logged, severity-tagged, reproduced</span></div>
+        </div>
+        <div class="stage">
+          <div class="node"></div>
+          <div class="body"><b>Report delivered</b><span>Full writeup + call to walk through findings</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="services">
+  <div class="wrap">
+    <div class="eyebrow-row"><span class="kicker">SERVICES</span></div>
+    <h2>Testing that fits wherever you are in development</h2>
+    <p class="section-sub">Pick a single pass on a tricky build, or bring me on for the stretch before you ship.</p>
+
+    <div class="service-grid">
+      <div class="service">
+        <div class="sev crit">SEV-1</div>
+        <h3>Bug hunting</h3>
+        <p>Systematic passes through your build to find crashes, soft-locks, and breaking bugs, each one logged with steps to reproduce.</p>
+      </div>
+      <div class="service">
+        <div class="sev">SEV-2</div>
+        <h3>Compatibility testing</h3>
+        <p>Checking your game across devices, OS versions, resolutions, and controllers so launch day doesn't surface surprises.</p>
+      </div>
+      <div class="service">
+        <div class="sev">SEV-2</div>
+        <h3>Playtest feedback</h3>
+        <p>Fresh-eyes sessions on pacing, difficulty, tutorials, and onboarding — the things that are hard to see from inside the build.</p>
+      </div>
+      <div class="service">
+        <div class="sev crit">SEV-1</div>
+        <h3>Performance checks</h3>
+        <p>Frame rate, load times, and memory behavior under real play, flagged against the platform's own requirements.</p>
+      </div>
+      <div class="service">
+        <div class="sev">SEV-3</div>
+        <h3>Regression passes</h3>
+        <p>Re-testing after a patch to confirm fixed bugs stayed fixed and nothing new broke in the process.</p>
+      </div>
+      <div class="service">
+        <div class="sev">SEV-3</div>
+        <h3>Store readiness</h3>
+        <p>A pass against platform certification checklists before you submit to storefronts like Steam or console stores.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="process">
+  <div class="wrap">
+    <div class="eyebrow-row"><span class="kicker">PROCESS</span></div>
+    <h2>How a testing pass runs</h2>
+
+    <div class="process-list">
+      <div class="proc-row">
+        <div class="num">01</div>
+        <div><h4>Scope the pass</h4><p>You tell me the build, platform, and what worries you most. I put together a short test plan and a quote before anything starts.</p></div>
+      </div>
+      <div class="proc-row">
+        <div class="num">02</div>
+        <div><h4>Test the build</h4><p>I play with intent — following the plan, but also breaking things a normal player would stumble into by accident.</p></div>
+      </div>
+      <div class="proc-row">
+        <div class="num">03</div>
+        <div><h4>Log everything</h4><p>Every issue gets a severity, reproduction steps, and video or screenshots where useful, so your team can act without guesswork.</p></div>
+      </div>
+      <div class="proc-row">
+        <div class="num">04</div>
+        <div><h4>Deliver &amp; debrief</h4><p>You get the full report plus a short call to walk through anything that needs context.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="pricing">
+  <div class="wrap">
+    <div class="eyebrow-row"><span class="kicker">PRICING</span></div>
+    <h2>Straightforward packages, scoped to your build</h2>
+    <p class="section-sub">Every project starts with a scoping call, so these are starting points — the quote you get will match your actual build size and timeline.</p>
+
+    <div class="price-grid">
+      <div class="price-card">
+        <div class="tag">SINGLE PASS</div>
+        <h3>Bug Sweep</h3>
+        <div class="amount">$150 <small>/ build</small></div>
+        <ul>
+          <li>Up to 6 hours of testing</li>
+          <li>One platform</li>
+          <li>Bug log with severity tags</li>
+          <li>48-hour turnaround</li>
+        </ul>
+        <a href="#contact" class="cta">Get a quote</a>
+      </div>
+
+      <div class="price-card feature">
+        <div class="tag">MOST COMMON</div>
+        <h3>Full QA Pass</h3>
+        <div class="amount">$450 <small>/ build</small></div>
+        <ul>
+          <li>Up to 20 hours of testing</li>
+          <li>Up to 3 platforms or devices</li>
+          <li>Bug log + playtest feedback</li>
+          <li>One regression pass included</li>
+          <li>Debrief call</li>
+        </ul>
+        <a href="#contact" class="cta">Get a quote</a>
+      </div>
+
+      <div class="price-card">
+        <div class="tag">ONGOING</div>
+        <h3>Dev Cycle Partner</h3>
+        <div class="amount">from $30 <small>/ hour</small></div>
+        <ul>
+          <li>Recurring testing through development</li>
+          <li>Priority turnaround on new builds</li>
+          <li>Direct line for quick questions</li>
+        </ul>
+        <a href="#contact" class="cta">Get a quote</a>
+      </div>
+    </div>
+
+    <p class="price-note">Payment: I send an invoice through PayPal or Stripe once we've agreed on scope — nothing is charged upfront without a quote you've approved.</p>
+  </div>
+</section>
+
+<section id="contact" style="border-bottom:none;">
+  <div class="wrap contact-grid">
+    <div class="contact-info">
+      <div class="eyebrow-row"><span class="kicker">CONTACT</span></div>
+      <h2>Tell me about your build</h2>
+      <p class="section-sub">Fill in the form and it'll open in your email client, ready to send — or reach out directly.</p>
+      <dl>
+        <div><dt>EMAIL</dt><dd>you@example.com</dd></div>
+        <div><dt>TYPICAL REPLY TIME</dt><dd>Within 1–2 business days</dd></div>
+        <div><dt>CURRENTLY</dt><dd>Open for new projects</dd></div>
+      </dl>
+    </div>
+
+    <form id="quote-form">
+      <div class="field-row">
+        <div>
+          <label for="name">Your name</label>
+          <input type="text" id="name" required>
+        </div>
+        <div>
+          <label for="company">Studio / company</label>
+          <input type="text" id="company">
+        </div>
+      </div>
+      <div class="field-row">
+        <div>
+          <label for="game">Game title</label>
+          <input type="text" id="game">
+        </div>
+        <div>
+          <label for="platform">Platform</label>
+          <select id="platform">
+            <option>PC</option>
+            <option>Mac</option>
+            <option>iOS</option>
+            <option>Android</option>
+            <option>Console</option>
+            <option>Multiple</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <label for="details">What do you need tested?</label>
+        <textarea id="details" placeholder="Build stage, timeline, and anything you're most worried about."></textarea>
+      </div>
+      <button type="submit" class="submit-btn">Open email to send</button>
+      <p class="form-status" id="form-status"></p>
+      <p class="form-note">This opens a pre-filled email in your default mail app — nothing is sent from this page directly.</p>
+    </form>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot-row">
+    <div class="logo"><span class="dot"></span>TESTBENCH</div>
+    <div class="fine">© 2026 · Replace with your name/business</div>
+  </div>
+</footer>
+
+<script>
+  document.getElementById('quote-form').addEventListener('submit', function(e){
+    e.preventDefault();
+    var name = document.getElementById('name').value.trim();
+    var company = document.getElementById('company').value.trim();
+    var game = document.getElementById('game').value.trim();
+    var platform = document.getElementById('platform').value;
+    var details = document.getElementById('details').value.trim();
+
+    if(!name){
+      document.getElementById('form-status').textContent = 'Please add your name first.';
+      document.getElementById('form-status').classList.remove('ok');
+      return;
+    }
+
+    var subject = encodeURIComponent('QA testing inquiry — ' + (game || 'new project'));
+    var body = encodeURIComponent(
+      'Name: ' + name + '\n' +
+      'Studio/company: ' + (company || '—') + '\n' +
+      'Game title: ' + (game || '—') + '\n' +
+      'Platform: ' + platform + '\n\n' +
+      'What needs testing:\n' + (details || '—')
+    );
+
+    window.location.href = 'mailto:you@example.com?subject=' + subject + '&body=' + body;
+
+    document.getElementById('form-status').textContent = 'Opening your email app…';
+    document.getElementById('form-status').classList.add('ok');
+  });
+</script>
+
+</body>
+</html>
